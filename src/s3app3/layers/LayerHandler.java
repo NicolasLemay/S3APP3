@@ -1,8 +1,9 @@
-package s3app3.layers;
+package layers;
 
-import s3app3.interfaces.ChainHandler;
-import s3app3.packets.Packet;
-import s3app3.states.PacketHandlerState;
+
+import interfaces.ChainHandler;
+import packets.Packet;
+import states.PacketHandlerState;
 
 public abstract class LayerHandler implements ChainHandler {
     private LayerHandler nextHandler;

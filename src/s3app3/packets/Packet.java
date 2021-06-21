@@ -1,4 +1,4 @@
-package s3app3.packets;
+package packets;
 
 import java.io.File;
 import java.util.*;

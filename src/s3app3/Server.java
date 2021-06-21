@@ -1,6 +1,4 @@
-package s3app3;
-
-import s3app3.states.ReceiveState;
+import states.ReceiveState;
 
 public class Server {
 

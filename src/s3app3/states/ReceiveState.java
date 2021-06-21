@@ -1,7 +1,7 @@
-package s3app3.states;
+package states;
 
-import s3app3.layers.LayerHandler;
-import s3app3.packets.Packet;
+import layers.LayerHandler;
+import packets.Packet;
 
 public class ReceiveState extends PacketHandlerState {
 

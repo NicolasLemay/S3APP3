@@ -1,6 +1,7 @@
-package s3app3.layers;
+package layers;
 
-import s3app3.packets.Packet;
+import packets.Packet;
+import layers.LayerHandler;
 
 public class TransportLayer extends LayerHandler {
 

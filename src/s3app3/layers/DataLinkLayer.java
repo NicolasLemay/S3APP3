@@ -1,6 +1,9 @@
-package s3app3.layers;
+package layers;
 
-import s3app3.packets.Packet;
+import packets.Packet;
+
+import java.nio.ByteBuffer;
+import java.util.zip.CRC32;
 
 public class DataLinkLayer extends LayerHandler {
 
@@ -9,6 +12,8 @@ public class DataLinkLayer extends LayerHandler {
         System.out.println("Datalink layer : send");
         System.out.println(packet.toString());
         System.out.println("");
+        String msg = "Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!";
+        generateCheckSum(msg.getBytes());
         return packet;
     }
 
@@ -18,5 +23,25 @@ public class DataLinkLayer extends LayerHandler {
         System.out.println(packet.toString());
         System.out.println("");
         return packet;
+    }
+
+    private void generateCheckSum(byte [] msg){
+
+        CRC32 crc = new CRC32();
+        crc.update(msg);
+        byte[] crcByte = Long.toHexString(crc.getValue()).getBytes();
+        System.out.println(Long.toHexString(crc.getValue()).getBytes());
+
+        System.out.println(msg.length+" "+  crcByte.length);
+
+        byte[] finalMsg = new byte[msg.length + crcByte.length];
+
+        System.out.println(finalMsg);
+        crc.update(finalMsg);
+        System.out.println(Long.toHexString(crc.getValue()));
+    }
+
+    private boolean validateCheckSum() {
+        return true;
     }
 }
