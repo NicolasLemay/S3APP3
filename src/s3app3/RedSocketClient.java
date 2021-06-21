@@ -1,7 +1,5 @@
-package s3app3;
-
-import s3app3.packets.Packet;
-import s3app3.states.SendState;
+import packets.Packet;
+import states.SendState;
 
 import java.io.BufferedReader;
 import java.io.IOException;

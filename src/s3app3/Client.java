@@ -1,3 +1,4 @@
+import packets.Packet;
 import states.SendState;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package s3app3;
+
 
 public class NetConfig {
     public static Integer getPort() {

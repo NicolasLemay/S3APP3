@@ -5,7 +5,7 @@ import layers.TransportLayer;
 import packets.Packet;
 import states.PacketHandlerState;
 
-public abstract class RedSocket extends Thread {
+public class RedSocket extends Thread {
     private LayerHandler handler;
 
     public RedSocket(PacketHandlerState state) {

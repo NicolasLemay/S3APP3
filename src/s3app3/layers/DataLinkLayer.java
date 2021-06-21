@@ -13,7 +13,9 @@ public class DataLinkLayer extends LayerHandler {
         System.out.println(packet.toString());
         System.out.println("");
         String msg = "Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!";
-        generateCheckSum(msg.getBytes());
+
+        byte [] paquet = generateCheckSum(msg.getBytes());
+        validateCheckSum(paquet);
         return packet;
     }
 
@@ -25,23 +27,37 @@ public class DataLinkLayer extends LayerHandler {
         return packet;
     }
 
-    private void generateCheckSum(byte [] msg){
-
+    private byte[] generateCheckSum(byte [] msg){
         CRC32 crc = new CRC32();
         crc.update(msg);
+
         byte[] crcByte = Long.toHexString(crc.getValue()).getBytes();
-        System.out.println(Long.toHexString(crc.getValue()).getBytes());
-
-        System.out.println(msg.length+" "+  crcByte.length);
-
         byte[] finalMsg = new byte[msg.length + crcByte.length];
 
-        System.out.println(finalMsg);
-        crc.update(finalMsg);
-        System.out.println(Long.toHexString(crc.getValue()));
+        System.arraycopy(msg, 0, finalMsg, 0, msg.length);
+        System.arraycopy(crcByte, 0, finalMsg, msg.length, 8);
+
+        return finalMsg;
     }
 
-    private boolean validateCheckSum() {
+    private boolean validateCheckSum(byte[] decypher) {
+        CRC32 crc = new CRC32();
+        byte[] checksum = new byte[8];
+        byte[] newArray = new byte[decypher.length-8];
+
+        System.arraycopy(decypher, decypher.length-8, checksum, 0, 8);
+        System.arraycopy(decypher, 0, newArray, 0, decypher.length-8);
+
+        crc.update(newArray);
+        byte [] newCRC = Long.toHexString(crc.getValue()).getBytes();
+
+        for (int i = 0; i < newCRC.length; i++){
+            if(newCRC[i] != checksum[i]){
+                System.out.println("invalidated");
+                return false;
+            }
+        }
+        System.out.println("Validated");
         return true;
     }
 }

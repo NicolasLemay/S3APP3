@@ -1,7 +1,5 @@
-package s3app3;
-
-import s3app3.packets.Packet;
-import s3app3.states.ReceiveState;
+import packets.Packet;
+import states.ReceiveState;
 
 public class RedSocketServer extends RedSocket {
 
