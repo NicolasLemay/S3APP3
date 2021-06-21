@@ -7,7 +7,7 @@ import s3app3.layers.TransportLayer;
 import s3app3.packets.Packet;
 import s3app3.states.PacketHandlerState;
 
-public class RedSocket extends Thread {
+public abstract class RedSocket extends Thread {
     private LayerHandler handler;
 
     public RedSocket(PacketHandlerState state) {
@@ -22,11 +22,8 @@ public class RedSocket extends Thread {
         handler.setState(state);
     }
 
-    @Override
-    public void run() {
-        Packet packet = new Packet("bin", "test.txt");
-        handler.handle(packet);
-        while(true);
+    public LayerHandler getHandler() {
+        return handler;
     }
 
 }

@@ -1,41 +1,48 @@
 package s3app3.packets;
 
-import java.util.Arrays;
+import java.io.File;
+import java.util.*;
 
 public class Packet {
 
-    private String fileName;
-    private String filePath;
-    private Integer size;
-    private Integer sequenceNumber;
+    private final File file;
     private String sourceIP;
     private String targetIP;
-    private Byte[] data;
+    private byte[] data;
+    private ArrayList<byte[]> fragments;
 
-    public Packet(String filePath, String fileName) {
-        this.filePath = filePath;
-        this.fileName = fileName;
-        //TODO import data and determine size
+    public Packet(String filePath) {
+
+        file = new File(filePath);
+        fragments = new ArrayList<>();
     }
 
     public String getFileName() {
-        return fileName;
+        return file.getName();
     }
 
     public String getFilePath() {
-        return filePath;
+        return file.getPath();
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public ArrayList<byte[]> getFragments() {
+        return fragments;
+    }
+
+    public void setFragments(ArrayList<byte[]> fragments) {
+        this.fragments = fragments;
+    }
+
+    public void addFragment(byte[] fragment) {
+        fragments.add(fragment);
     }
 
     public Integer getSize() {
-        return size;
-    }
-
-    public Integer getSequenceNumber() {
-        return sequenceNumber;
-    }
-
-    public void setSequenceNumber(Integer sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
+        return fragments.size();
     }
 
     public String getSourceIP() {
@@ -54,20 +61,22 @@ public class Packet {
         this.targetIP = targetIP;
     }
 
-    public Byte[] getData() {
+    public byte[] getData() {
         return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     @Override
     public String toString() {
         return "Packet{" +
-                "fileName='" + fileName + '\'' +
-                ", filePath='" + filePath + '\'' +
-                ", size=" + size +
-                ", sequenceNumber=" + sequenceNumber +
+                "file=" + file +
                 ", sourceIP='" + sourceIP + '\'' +
                 ", targetIP='" + targetIP + '\'' +
                 ", data=" + Arrays.toString(data) +
+                ", fragments=" + fragments +
                 '}';
     }
 }
