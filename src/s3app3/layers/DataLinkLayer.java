@@ -3,8 +3,8 @@ package s3app3.layers;
 import s3app3.packets.Packet;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 
@@ -24,6 +24,8 @@ public class DataLinkLayer extends LayerHandler {
         try {
             DatagramSocket socket = new DatagramSocket();
             InetAddress address = InetAddress.getByName("localhost");
+            byte[] buffer = null;
+            DatagramPacket receivedPacket;
 
             while(amountPacketSent < packet.getFragments().size()){
                 byte[] msg = packet.getFragments().get(amountPacketSent);
@@ -31,7 +33,10 @@ public class DataLinkLayer extends LayerHandler {
                 DatagramPacket paquet = new DatagramPacket(bytesPaquet, bytesPaquet.length, address, 25001);
                 socket.send(paquet);
                 amountPacketSent++;
-                //receivedPacket = new DatagramPacket(buffer, buffer.length);
+
+//                receivedPacket = new DatagramPacket(buffer, buffer.length);
+//                socket.receive(receivedPacket);
+//                System.out.println(receivedPacket.getLength());
             }
 
             byte[] msg3 = str3.getBytes();
@@ -65,7 +70,7 @@ public class DataLinkLayer extends LayerHandler {
             DatagramPacket receivedPacket;
 
             while(true){
-                buffer = new byte[256];
+                buffer = new byte[300];
                 receivedPacket = new DatagramPacket(buffer, buffer.length);
                 server.receive(receivedPacket);
 
@@ -84,9 +89,9 @@ public class DataLinkLayer extends LayerHandler {
                     System.arraycopy(msgReceived, 0, newArray, 0, msgReceived.length-CHECKSUM_SIZE);
 
                     packet.addFragment(newArray);
-                    byte[] acknowledgement = new byte[0];
-                    DatagramPacket paquet = new DatagramPacket(acknowledgement, acknowledgement.length, address, 25001);
-                    server.send(paquet);
+//                    byte[] acknowledgement = new byte[0];
+//                    DatagramPacket paquet = new DatagramPacket(acknowledgement, acknowledgement.length, address, 25001);
+//                    server.send(paquet);
                 } else {
                     System.out.println("Pacquet invalid");
                 }
@@ -118,10 +123,19 @@ public class DataLinkLayer extends LayerHandler {
         CRC32 crc = new CRC32();
         crc.update(msg);
 
-        byte[] crcByte = Long.toHexString(crc.getValue()).getBytes();
+        long checksumValue = crc.getValue();
+        byte[] crcByte = new byte[Long.BYTES];
+        for(int i = Long.BYTES -1; i >= 0; i--){
+            crcByte[i] = (byte) (checksumValue & 0xFF);
+            checksumValue >>= Byte.SIZE;
+        }
+
         byte[] finalMsg = new byte[msg.length + crcByte.length];
 
         System.arraycopy(msg, 0, finalMsg, 0, msg.length);
+        System.out.println(new String(finalMsg));
+        System.out.println(new String(crcByte));
+        System.out.println(crcByte.length);
         System.arraycopy(crcByte, 0, finalMsg, msg.length, CHECKSUM_SIZE);
 
         return finalMsg;
@@ -138,7 +152,12 @@ public class DataLinkLayer extends LayerHandler {
         System.arraycopy(decypher, 0, newArray, 0, decypher.length-CHECKSUM_SIZE);
 
         crc.update(newArray);
-        byte [] newCRC = Long.toHexString(crc.getValue()).getBytes();
+        long checksumValue = crc.getValue();
+        byte[] newCRC = new byte[Long.BYTES];
+        for(int i = Long.BYTES -1; i >= 0; i--){
+            newCRC[i] = (byte) (checksumValue & 0xFF);
+            checksumValue >>= Byte.SIZE;
+        }
 
         for (int i = 0; i < newCRC.length; i++){
             if(newCRC[i] != checksum[i]){

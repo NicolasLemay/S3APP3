@@ -33,7 +33,7 @@ public class ApplicationLayer extends LayerHandler {
         System.out.println("Application layer : receive");
 
         byte[] fileContent = packet.getData();
-        Path path = Paths.get("./files/" + packet.getFileName());
+        Path path = Paths.get("./outputfiles/" + packet.getFileName());
 
         try {
             Files.write(path, fileContent);

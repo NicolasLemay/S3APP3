@@ -11,7 +11,7 @@ public class RedSocketServer extends RedSocket {
 
     @Override
     public void run() {
-        Packet packet = new Packet("./test.txt");
+        Packet packet = new Packet("test.txt");
         getHandler().handle(packet);
         while(true);
     }

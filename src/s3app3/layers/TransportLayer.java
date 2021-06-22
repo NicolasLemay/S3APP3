@@ -1,6 +1,7 @@
 package s3app3.layers;
 
 
+import s3app3.Acknowledgement;
 import s3app3.layers.LayerHandler;
 import s3app3.exceptions.TransmissionErrorException;
 import s3app3.packets.Packet;
