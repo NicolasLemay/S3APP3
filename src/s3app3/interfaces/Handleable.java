@@ -1,6 +1,6 @@
-package interfaces;
+package s3app3.interfaces;
 
-import packets.Packet;
+import s3app3.packets.Packet;
 
 public interface Handleable {
     Packet handle(Packet p);

@@ -1,9 +1,9 @@
-package layers;
+package s3app3.layers;
 
 
-import layers.LayerHandler;
+import s3app3.layers.LayerHandler;
 import s3app3.exceptions.TransmissionErrorException;
-import packets.Packet;
+import s3app3.packets.Packet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,6 +76,7 @@ public class TransportLayer extends LayerHandler {
 
             if(nameFirstFragment.equals("")) throw new TransmissionErrorException("Missing filename");
             else packet.setFilePath(nameFirstFragment);
+            System.out.println(new String(lastFragment));
             if(!nameLastFragment.equals(nameFirstFragment+".end")) throw new TransmissionErrorException("Incomplete final fragment");
 
             packet.setSourceIP(sourceIp);
@@ -142,7 +143,7 @@ public class TransportLayer extends LayerHandler {
 
     private ArrayList<HeaderOption> stringToHeader(String stringHeader) {
         ArrayList<HeaderOption> header = new ArrayList<>();
-        String[] stringHeaderOptions = stringHeader.split("\\[(.*?)\\]");
+        String[] stringHeaderOptions = stringHeader.replaceAll("(^.*?\\[|\\]\\s*$)","").split("\\]\\s*,\\s*\\[");
         for(String stringHeaderOption : stringHeaderOptions) {
             String[] headerOption = stringHeaderOption.split(":", 2);
             if(headerOption.length < 2) continue;
@@ -153,7 +154,7 @@ public class TransportLayer extends LayerHandler {
 
     private String getValue(ArrayList<HeaderOption> header, String fieldName) {
         for(HeaderOption option : header) {
-            if(option.value.equals(fieldName)) return option.value;
+            if(option.name.equals(fieldName)) return option.value;
         }
         return "";
     }

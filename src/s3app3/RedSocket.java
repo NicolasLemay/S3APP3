@@ -1,11 +1,12 @@
-import layers.ApplicationLayer;
-import layers.DataLinkLayer;
-import layers.LayerHandler;
-import layers.TransportLayer;
-import packets.Packet;
-import states.PacketHandlerState;
+package s3app3;
 
-public class RedSocket extends Thread {
+import s3app3.layers.ApplicationLayer;
+import s3app3.layers.DataLinkLayer;
+import s3app3.layers.LayerHandler;
+import s3app3.layers.TransportLayer;
+import s3app3.states.PacketHandlerState;
+
+public abstract class RedSocket extends Thread {
     private LayerHandler handler;
 
     public RedSocket(PacketHandlerState state) {

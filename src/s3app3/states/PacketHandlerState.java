@@ -1,8 +1,8 @@
-package states;
+package s3app3.states;
 
-import interfaces.Handleable;
-import layers.LayerHandler;
-import packets.Packet;
+import s3app3.interfaces.Handleable;
+import s3app3.layers.LayerHandler;
+import s3app3.packets.Packet;
 
 public abstract class PacketHandlerState {
 

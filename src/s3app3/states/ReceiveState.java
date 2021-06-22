@@ -1,7 +1,7 @@
-package states;
+package s3app3.states;
 
-import layers.LayerHandler;
-import packets.Packet;
+import s3app3.layers.LayerHandler;
+import s3app3.packets.Packet;
 
 import java.io.IOException;
 

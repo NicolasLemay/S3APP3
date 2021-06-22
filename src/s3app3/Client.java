@@ -1,8 +1,6 @@
-import packets.Packet;
-import states.SendState;
+package s3app3;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 public class Client {
 

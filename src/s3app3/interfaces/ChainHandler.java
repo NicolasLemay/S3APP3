@@ -1,6 +1,6 @@
-package interfaces;
+package s3app3.interfaces;
 
-import packets.Packet;
+import s3app3.packets.Packet;
 
 import java.io.IOException;
 

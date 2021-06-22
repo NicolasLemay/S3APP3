@@ -1,6 +1,6 @@
-package layers;
+package s3app3.layers;
 
-import packets.Packet;
+import s3app3.packets.Packet;
 
 import java.io.File;
 import java.io.IOException;

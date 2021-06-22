@@ -1,4 +1,4 @@
-package layers;
+package s3app3.layers;
 
 public class NetConfig {
     public static Integer getPort() {

@@ -1,11 +1,9 @@
-import packets.Packet;
-import states.SendState;
+package s3app3;
 
-import java.io.BufferedReader;
+import s3app3.packets.Packet;
+import s3app3.states.SendState;
+
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.Scanner;
 
 public class RedSocketClient extends RedSocket {
