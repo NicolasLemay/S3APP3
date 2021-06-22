@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Packet {
 
-    private final File file;
+    private File file;
     private String sourceIP;
     private String targetIP;
     private byte[] data;
@@ -15,6 +15,10 @@ public class Packet {
 
         file = new File(filePath);
         fragments = new ArrayList<>();
+    }
+
+    public void setFilePath(String filePath) {
+        file = new File(filePath);
     }
 
     public String getFileName() {
@@ -71,12 +75,17 @@ public class Packet {
 
     @Override
     public String toString() {
+        StringBuilder fragmentString = new StringBuilder("[\n");
+        for(byte[] b : fragments) {
+            fragmentString.append('{').append(new String(b)).append("},\n");
+        }
+        fragmentString.append(']');
         return "Packet{" +
                 "file=" + file +
                 ", sourceIP='" + sourceIP + '\'' +
                 ", targetIP='" + targetIP + '\'' +
                 ", data=" + Arrays.toString(data) +
-                ", fragments=" + fragments +
+                ", fragments=" + fragmentString +
                 '}';
     }
 }
