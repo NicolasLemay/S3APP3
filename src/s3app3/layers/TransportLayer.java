@@ -37,8 +37,6 @@ public class TransportLayer extends LayerHandler {
         header = buildHeader(packet.getFileName(), sequenceNumber++, packet.getSourceIP(), packet.getTargetIP(), new byte[0]);
         packet.addFragment(headerToString(header).getBytes());
 
-        System.out.println("Number of bytes : " + data.length);
-
         //Fragments of data
         for(int i = 0; i < data.length; i+= NetConfig.maxBytesPerFragment()) {
             int fragmentDataLength = Math.min(data.length - i, NetConfig.maxBytesPerFragment());
@@ -77,7 +75,6 @@ public class TransportLayer extends LayerHandler {
 
             if(nameFirstFragment.equals("")) throw new TransmissionErrorException("Missing filename");
             else packet.setFilePath(nameFirstFragment);
-            System.out.println(new String(lastFragment));
             if(!nameLastFragment.equals(nameFirstFragment+".end")) throw new TransmissionErrorException("Incomplete final fragment");
 
             packet.setSourceIP(sourceIp);

@@ -85,7 +85,7 @@ public class Packet {
                 ", sourceIP='" + sourceIP + '\'' +
                 ", targetIP='" + targetIP + '\'' +
                 ", data=" + Arrays.toString(data) +
-                ", fragments=" + fragmentString +
+                //", fragments=" + fragmentString +
                 '}';
     }
 }

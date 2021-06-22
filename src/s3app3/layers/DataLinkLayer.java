@@ -2,6 +2,7 @@ package s3app3.layers;
 
 import s3app3.packets.Packet;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.*;
@@ -11,13 +12,17 @@ import java.util.zip.CRC32;
 public class DataLinkLayer extends LayerHandler {
 
     final int CHECKSUM_SIZE = 8;
+    private LogFile logFile;
+
+    public DataLinkLayer() {
+        logFile = LogFile.getInstance();
+    }
 
     @Override
     public Packet send(Packet packet) {
-        int amountPacketSent = 0;
         System.out.println("Datalink layer : send");
-        System.out.println(packet.toString());
-        System.out.println("");
+        int amountPacketSent = 0;
+        logFile.addLog("Client", "Transmission initialization");
 
         String str3 = "fin";
 
@@ -51,6 +56,7 @@ public class DataLinkLayer extends LayerHandler {
         }
 
 
+        System.out.println(packet.toString() + "\n");
         return packet;
     }
 
@@ -59,8 +65,6 @@ public class DataLinkLayer extends LayerHandler {
         int packetsReceived = 0;
 
         System.out.println("Datalink layer : receive : fileName");
-        System.out.println(packet.toString());
-        System.out.println("");
 
         byte[] msgReceived = null;
         try {
@@ -83,7 +87,7 @@ public class DataLinkLayer extends LayerHandler {
                 }
 
                 if(validateCheckSum(msgReceived)) {
-                    System.out.println("Pacquet validated");
+                    logFile.addLog("Server", "Validated packet (" + new String(msgReceived) + ")");
 
                     byte[] newArray = new byte[msgReceived.length - 8];
                     System.arraycopy(msgReceived, 0, newArray, 0, msgReceived.length-CHECKSUM_SIZE);
@@ -93,7 +97,7 @@ public class DataLinkLayer extends LayerHandler {
 //                    DatagramPacket paquet = new DatagramPacket(acknowledgement, acknowledgement.length, address, 25001);
 //                    server.send(paquet);
                 } else {
-                    System.out.println("Pacquet invalid");
+                    logFile.addLog("Server", "Invalidated packet (" + new String(msgReceived) + ")");
                 }
 
             }
@@ -103,16 +107,16 @@ public class DataLinkLayer extends LayerHandler {
         }
 
 
+        System.out.println(packet.toString() + "\n");
         return packet;
     }
 
     private boolean isEndOfTransmission(byte[] msg) {
-        System.out.println("End of transmission");
         byte[] endArray = new byte[msg.length-8];
         System.arraycopy(msg, 0, endArray, 0, msg.length-CHECKSUM_SIZE);
         String endMessage = new String(endArray, StandardCharsets.UTF_8);
-        System.out.println(endMessage);
         if (endMessage.equals("fin")){
+            logFile.addLog("Server", "End of transmission");
             return true;
         }
 
@@ -133,9 +137,6 @@ public class DataLinkLayer extends LayerHandler {
         byte[] finalMsg = new byte[msg.length + crcByte.length];
 
         System.arraycopy(msg, 0, finalMsg, 0, msg.length);
-        System.out.println(new String(finalMsg));
-        System.out.println(new String(crcByte));
-        System.out.println(crcByte.length);
         System.arraycopy(crcByte, 0, finalMsg, msg.length, CHECKSUM_SIZE);
 
         return finalMsg;
@@ -161,11 +162,9 @@ public class DataLinkLayer extends LayerHandler {
 
         for (int i = 0; i < newCRC.length; i++){
             if(newCRC[i] != checksum[i]){
-                System.out.println("invalidated");
                 return false;
             }
         }
-        System.out.println("Validated");
         return true;
     }
 }
