@@ -8,20 +8,27 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Scanner;
 
 public class RedSocketClient extends RedSocket {
 
-    private Packet packetToSend;
-
-    public RedSocketClient(Packet packetToSend) throws IOException {
+    public RedSocketClient() throws IOException {
         super(new SendState());
-        this.packetToSend = packetToSend;
     }
 
     @Override
     public void run() {
 
-        getHandler().handle(packetToSend);
+        Scanner scanner = new Scanner(System.in);
+        while(true) {
+            System.out.print(" File path : ");
+            String fileName = scanner.nextLine();
+
+            if(fileName.equals("")) break;
+
+            Packet packetToSend = new Packet(fileName);
+            getHandler().handle(packetToSend);
+        }
 
         /*try {
             DatagramSocket socket = new DatagramSocket();
