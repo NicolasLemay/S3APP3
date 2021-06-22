@@ -1,8 +1,9 @@
 package layers;
 
-import s3app3.NetConfig;
+
+import layers.LayerHandler;
 import s3app3.exceptions.TransmissionErrorException;
-import s3app3.packets.Packet;
+import packets.Packet;
 
 import java.util.ArrayList;
 import java.util.Arrays;

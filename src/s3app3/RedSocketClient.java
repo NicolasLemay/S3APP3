@@ -34,7 +34,7 @@ public class RedSocketClient extends RedSocket {
             Packet reformatedPacket = getHandler().handle(packetToSend);
             byte[] buf = reformatedPacket.getData();
 
-            DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), NetConfig.getPort());
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), layers.NetConfig.getPort());
             socket.send(packet);
 
             // get response

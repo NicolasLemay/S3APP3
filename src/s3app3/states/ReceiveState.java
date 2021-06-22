@@ -3,6 +3,8 @@ package states;
 import layers.LayerHandler;
 import packets.Packet;
 
+import java.io.IOException;
+
 public class ReceiveState extends PacketHandlerState {
 
     @Override
