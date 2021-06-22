@@ -31,6 +31,7 @@ public class DataLinkLayer extends LayerHandler {
                 DatagramPacket paquet = new DatagramPacket(bytesPaquet, bytesPaquet.length, address, 25001);
                 socket.send(paquet);
                 amountPacketSent++;
+                //receivedPacket = new DatagramPacket(buffer, buffer.length);
             }
 
             byte[] msg3 = str3.getBytes();
@@ -59,6 +60,7 @@ public class DataLinkLayer extends LayerHandler {
         byte[] msgReceived = null;
         try {
             DatagramSocket server = new DatagramSocket(25001);
+            InetAddress address = InetAddress.getByName("localhost");
             byte[] buffer = null;
             DatagramPacket receivedPacket;
 
@@ -67,21 +69,28 @@ public class DataLinkLayer extends LayerHandler {
                 receivedPacket = new DatagramPacket(buffer, buffer.length);
                 server.receive(receivedPacket);
 
-
-
                 msgReceived = new byte[receivedPacket.getLength()];
                 System.arraycopy(receivedPacket.getData(), 0, msgReceived, 0, receivedPacket.getLength());
 
-                if(validateCheckSum(msgReceived)) {
-                    System.out.println("Pacquet validated");
-                    packet.addFragment(msgReceived);
-                } else {
-                    System.out.println("Pacquet invalid");
-                }
                 if (isEndOfTransmission(msgReceived)){
                     server.close();
                     break;
                 }
+
+                if(validateCheckSum(msgReceived)) {
+                    System.out.println("Pacquet validated");
+
+                    byte[] newArray = new byte[msgReceived.length - 8];
+                    System.arraycopy(msgReceived, 0, newArray, 0, msgReceived.length-CHECKSUM_SIZE);
+
+                    packet.addFragment(newArray);
+                    byte[] acknowledgement = new byte[0];
+                    DatagramPacket paquet = new DatagramPacket(acknowledgement, acknowledgement.length, address, 25001);
+                    server.send(paquet);
+                } else {
+                    System.out.println("Pacquet invalid");
+                }
+
             }
 
         } catch (IOException e) {
