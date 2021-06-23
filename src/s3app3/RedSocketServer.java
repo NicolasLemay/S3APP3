@@ -9,10 +9,14 @@ public class RedSocketServer extends RedSocket {
         super(new ReceiveState());
     }
 
+    /**
+     * Starts handling packets.
+     */
     @Override
     public void run() {
-        Packet packet = new Packet("test.txt");
-        getHandler().handle(packet);
-        while(true);
+        while(true) {
+            Packet packet = new Packet();
+            getHandler().handle(packet);
+        }
     }
 }

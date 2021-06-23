@@ -4,11 +4,17 @@ import java.io.*;
 import java.util.logging.*;
 
 
+/**
+ * Utility for logging files.
+ */
 public class LogFile {
     private String fileName = "liaisonDeDonnes.log";
     private Logger logger;
     private static LogFile instance = null;
 
+    /**
+     * @return log file instance.
+     */
     public static LogFile getInstance()
     {
         if (instance == null)
@@ -45,6 +51,12 @@ public class LogFile {
         }
     }
 
+
+    /**
+     * Adds a log message to the log file.
+     * @param src source of the message.
+     * @param message message to write.
+     */
     public void addLog(String src, String message) {
         logger.info("["+ src+"] " +message);
     }

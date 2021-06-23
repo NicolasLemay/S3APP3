@@ -1,14 +1,17 @@
 package s3app3.layers;
 
 
-import s3app3.Acknowledgement;
-import s3app3.layers.LayerHandler;
 import s3app3.exceptions.TransmissionErrorException;
 import s3app3.packets.Packet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 
+/**
+ * The transport layer serves to dismantle packets into smaller fragments. The size of the data in each fragment
+ * corresponds to the the value of maxBytesPerFragment present in the NetConfig class.
+ */
 public class TransportLayer extends LayerHandler {
 
     private class HeaderOption {
@@ -26,6 +29,11 @@ public class TransportLayer extends LayerHandler {
         }
     }
 
+    /**
+     * Fragments a packet for the next layer.
+     * @param packet the packet received from the previous layer, generally the application layer.
+     * @return the same packet, fragmented into smaller chunks, with headers.
+     */
     @Override
     public Packet send(Packet packet) {
         System.out.println("Transport layer : send : IP");
@@ -41,6 +49,7 @@ public class TransportLayer extends LayerHandler {
         for(int i = 0; i < data.length; i+= NetConfig.maxBytesPerFragment()) {
             int fragmentDataLength = Math.min(data.length - i, NetConfig.maxBytesPerFragment());
             byte[] fragmentData = Arrays.copyOfRange(data, i, i + fragmentDataLength);
+
             header = buildHeader("", sequenceNumber++, packet.getSourceIP(), packet.getTargetIP(), fragmentData);
             packet.addFragment(headerToString(header).getBytes());
         }
@@ -49,16 +58,20 @@ public class TransportLayer extends LayerHandler {
         header = buildHeader(packet.getFileName() + ".end", sequenceNumber++, packet.getSourceIP(), packet.getTargetIP(), new byte[0]);
         packet.addFragment(headerToString(header).getBytes());
 
-        System.out.println(packet.toString());
-        System.out.println("");
         return packet;
     }
 
+
+    /**
+     * Rebuilds data from the packet fragments
+     * @param packet the packet received from the previous layer, generally the data link layer.
+     * @return the same packet, with its data rebuilt from its fragments
+     */
     @Override
     public Packet receive(Packet packet) {
         System.out.println("Transport layer : receive : IP");
         ArrayList<HeaderOption> header;
-        StringBuilder dataBuilder = new StringBuilder();
+        byte[] fullData = new byte[0];
         int sequenceNumber = 0;
 
         byte[] firstFragment = packet.getFragments().get(0);
@@ -85,6 +98,7 @@ public class TransportLayer extends LayerHandler {
             e.printStackTrace();
         }
 
+        int j = 0;
         for(byte[] fragment : packet.getFragments()) {
 
             header = stringToHeader(new String(fragment));
@@ -93,22 +107,25 @@ public class TransportLayer extends LayerHandler {
             String tempData = getValue(header, "data");
 
             try {
-                if(!sequence.equals(sequenceNumber++)) throw new TransmissionErrorException("Wrong sequence transmission");
+                if(!sequence.equals(sequenceNumber++)) throw new TransmissionErrorException("Wrong sequence transmission. Expeceted : " + (sequenceNumber - 1) + ", got: " + sequence);
             } catch (TransmissionErrorException e) {
                 e.printStackTrace();
                 //TODO acknowledge bad result
             }
 
-            dataBuilder.append(tempData);
+            byte[] tempDataByte = Base64.getDecoder().decode(tempData);
+            byte[] fullDataTemp = new byte[fullData.length + tempDataByte.length];
+            System.arraycopy(fullData, 0, fullDataTemp, 0, fullData.length);
+            System.arraycopy(tempDataByte, 0, fullDataTemp, fullData.length, tempDataByte.length);
+            fullData = fullDataTemp;
         }
 
-        packet.setData(dataBuilder.toString().getBytes());
+        packet.setData(fullData);
 
-        System.out.println(packet.toString());
-        System.out.println("");
         return packet;
     }
 
+    //Builds the full header for a packet
     private ArrayList<HeaderOption> buildHeader(String name, Integer sequenceNo, String sourceIp, String targetIp, byte[] data) {
         ArrayList<HeaderOption> header = new ArrayList<>();
 
@@ -116,19 +133,20 @@ public class TransportLayer extends LayerHandler {
         header.add(new HeaderOption("sequence", Integer.toString(sequenceNo)));
         header.add(new HeaderOption("sourceip", sourceIp));
         header.add(new HeaderOption("targetip", targetIp));
-        header.add(new HeaderOption("data", new String(data)));
+        header.add(new HeaderOption("data", Base64.getEncoder().encodeToString(data)));
 
         //Calculate header byte size (VERY UGLY)
         int nbBytes = headerToString(header).getBytes().length;
         HeaderOption sizeOption = new HeaderOption("size", Integer.toString(nbBytes));
         header.add(sizeOption);
-        //Newly calculated
+        //Newly calculated size
         nbBytes = headerToString(header).getBytes().length;
         sizeOption.value = Integer.toString(nbBytes);
 
         return header;
     }
 
+    //Turns header into a string, ready to parse for the next layer
     private String headerToString(ArrayList<HeaderOption> header) {
         StringBuilder stringHeader = new StringBuilder();
         for(HeaderOption ho : header) {
@@ -139,6 +157,7 @@ public class TransportLayer extends LayerHandler {
         return stringHeader.toString();
     }
 
+    //Turns a string back into a header, very fragile
     private ArrayList<HeaderOption> stringToHeader(String stringHeader) {
         ArrayList<HeaderOption> header = new ArrayList<>();
         String[] stringHeaderOptions = stringHeader.replaceAll("(^.*?\\[|\\]\\s*$)","").split("\\]\\s*,\\s*\\[");
@@ -150,6 +169,7 @@ public class TransportLayer extends LayerHandler {
         return header;
     }
 
+    //Gets the value of a HeaderOption in a header
     private String getValue(ArrayList<HeaderOption> header, String fieldName) {
         for(HeaderOption option : header) {
             if(option.name.equals(fieldName)) return option.value;

@@ -3,6 +3,9 @@ package s3app3.packets;
 import java.io.File;
 import java.util.*;
 
+/**
+ * Structure containing data to be manipulated through the various network layers.
+ */
 public class Packet {
 
     private File file;
@@ -11,8 +14,14 @@ public class Packet {
     private byte[] data;
     private ArrayList<byte[]> fragments;
 
-    public Packet(String filePath) {
+    public Packet() {
+        fragments = new ArrayList<>();
+    }
 
+    /**
+     * @param filePath path of the file.
+     */
+    public Packet(String filePath) {
         file = new File(filePath);
         fragments = new ArrayList<>();
     }
@@ -45,6 +54,10 @@ public class Packet {
         fragments.add(fragment);
     }
 
+
+    /**
+     * @return amount of fragments in the current packet.
+     */
     public Integer getSize() {
         return fragments.size();
     }

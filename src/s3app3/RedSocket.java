@@ -9,6 +9,9 @@ import s3app3.states.PacketHandlerState;
 public abstract class RedSocket extends Thread {
     private LayerHandler handler;
 
+    /**
+     * @param state state of all layer handlers.
+     */
     public RedSocket(PacketHandlerState state) {
         ApplicationLayer applicationLayer = new ApplicationLayer();
         TransportLayer transportLayer = new TransportLayer();

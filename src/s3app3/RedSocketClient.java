@@ -8,46 +8,27 @@ import java.util.Scanner;
 
 public class RedSocketClient extends RedSocket {
 
-    public RedSocketClient() throws IOException {
+    String fileName;
+
+    /**
+     * @param fileName name of the file to be handled.
+     * @throws IOException
+     */
+    public RedSocketClient(String fileName) throws IOException {
         super(new SendState());
+        this.fileName = fileName;
     }
 
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    /**
+     * Starts handling the packet.
+     */
     @Override
     public void run() {
-
-        Scanner scanner = new Scanner(System.in);
-        while(true) {
-            System.out.print(" File path : ");
-            String fileName = scanner.nextLine();
-
-            if(fileName.equals("")) break;
-
-            Packet packetToSend = new Packet(fileName);
-            getHandler().handle(packetToSend);
-        }
-
-        /*try {
-            DatagramSocket socket = new DatagramSocket();
-
-            Packet reformatedPacket = getHandler().handle(packetToSend);
-            byte[] buf = reformatedPacket.getData();
-
-            DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), layers.NetConfig.getPort());
-            socket.send(packet);
-
-            // get response
-            buf = new byte[256];
-            packet = new DatagramPacket(buf, buf.length);
-            socket.receive(packet);
-
-            // display response
-            String received = new String(packet.getData(), 0, packet.getLength());
-            System.out.println("Message " + received + " received");
-
-            socket.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        Packet packetToSend = new Packet(fileName);
+        getHandler().handle(packetToSend);
     }
 }
